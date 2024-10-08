@@ -1,4 +1,4 @@
-import { View, TextInput, Text } from "react-native";
+import { View, TextInput, Text, Alert } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState, useContext } from "react";
 import DateTimePicker from "react-native-ui-datepicker";
@@ -17,17 +17,48 @@ const ManageExpenses = () => {
     let formattedDate = dayjs(date).format("YYYY-MM-DD");
     setEditData({ ...editData, date: formattedDate });
   }, [date]);
+
   const [value, setValue] = useState(editData.amount);
+  useEffect(() => {
+    setEditData({ ...editData, amount: value });
+  }, [value]);
   const { addExpense, updateExpense, deleteExpense } =
     useContext(ExpenseStoreProvider);
   function addNewExpense() {
-    addExpense(editData);
-    navigation.navigate("allexpenses");
-    console.log(editData);
+    if (editData.amount === "" || editData.amount <= 0) {
+      console.log(editData);
+      Alert.alert("Invalid Amount", "Amount cannot be zero or less than it", [
+        { text: "Okay", style: "destructive" },
+      ]);
+    } else if (editData.desc === "" || editData.desc.length < 5) {
+      Alert.alert(
+        "Invalid Expense",
+        "Expense name cannot be less than 5 chars",
+        [{ text: "Okay", style: "destructive" }]
+      );
+    } else {
+      setEditData({ ...editData, amount: value });
+      addExpense(editData);
+      navigation.navigate("allexpenses");
+      console.log(editData);
+    }
   }
   function updateNewExpense() {
-    updateExpense(editData);
-    navigation.navigate("allexpenses");
+    if (editData.amount === "" || editData.amount <= 0) {
+      console.log(editData);
+      Alert.alert("Invalid Amount", "Amount cannot be zero or less than it", [
+        { text: "Okay", style: "destructive" },
+      ]);
+    } else if (editData.desc === "" || editData.desc.length < 5) {
+      Alert.alert(
+        "Invalid Expense",
+        "Expense name cannot be less than 5 chars",
+        [{ text: "Okay", style: "destructive" }]
+      );
+    } else {
+      updateExpense(editData);
+      navigation.navigate("allexpenses");
+    }
   }
   function deleteCurrentExpense() {
     deleteExpense(editData.id);
@@ -40,7 +71,7 @@ const ManageExpenses = () => {
         value={editData?.desc}
         placeholder="Expense Name"
         onChangeText={(enteredText) =>
-          setEditData({ ...data, desc: enteredText })
+          setEditData({ ...editData, desc: enteredText })
         }
       />
       <CurrencyInput
@@ -55,7 +86,7 @@ const ManageExpenses = () => {
         onChangeText={(formattedValue) => {
           const numericValue = formattedValue.replace(/₹|,/g, "");
           const numberValue = parseFloat(numericValue);
-          setEditData({ ...editData, amount: numberValue });
+          // setEditData({ ...editData, amount: numberValue });
           console.log(numberValue);
         }}
       />
