@@ -61,8 +61,25 @@ const ManageExpenses = () => {
     }
   }
   function deleteCurrentExpense() {
-    deleteExpense(editData.id);
-    navigation.navigate("allexpenses");
+    Alert.alert(
+      "Delete Expense",
+      "Are you sure you want to delete this expense",
+      [
+        {
+          text: "Yes",
+          style: "destructive",
+          onPress: () => {
+            deleteExpense(editData.id);
+            navigation.navigate("allexpenses");
+          },
+        },
+        {
+          text: "No",
+          style: "destructive",
+          isPreferred: true,
+        },
+      ]
+    );
   }
   return (
     <View className="">
