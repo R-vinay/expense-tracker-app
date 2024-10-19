@@ -1,5 +1,10 @@
-import React, { createContext, useState } from "react";
-
+import React, { createContext, useEffect, useState } from "react";
+import {
+  fetchExpenses,
+  storeExpense,
+  deleteExpenses,
+  updateExpenses,
+} from "../util/http";
 // const ExpenseStore = createContext({});
 // export default ExpenseStore;
 const DUMMY_EXPENSES = [
@@ -14,6 +19,13 @@ const DUMMY_EXPENSES = [
   { id: 9, amount: 2500.9, desc: "Books", date: "2024-09-21" },
   { id: 10, amount: 5625.0, desc: "Internet Bill", date: "2024-09-07" },
 ];
+const fetchData = async () => {
+  const expenses = await fetchExpenses();
+  console.log(expenses);
+  return expenses;
+};
+
+const expenses = fetchData();
 export const ExpenseStoreProvider = createContext({
   expenses: [],
   addExpense: () => {},
@@ -21,21 +33,32 @@ export const ExpenseStoreProvider = createContext({
   deleteExpense: () => {},
 });
 const ExpenseStore = ({ children }) => {
-  const [expenses, setExpenses] = useState([...DUMMY_EXPENSES]);
+  const [expenses, setExpenses] = useState([]);
+  useEffect(() => {
+    async function getData() {
+      const allExpenses = await fetchData();
+      setExpenses(allExpenses);
+    }
+    getData();
+  }, []);
   function addExpense(expense) {
     setExpenses([expense, ...expenses]);
+    storeExpense(expense);
   }
-  function updateExpense(given_expense) {
+  async function updateExpense(given_expense) {
+    await updateExpenses(given_expense.id, given_expense);
     setExpenses((prevValues) => {
       return prevValues.map((expense) => {
         return expense.id === given_expense.id ? given_expense : expense;
       });
     });
+    // console.log(given_expense.id, given_expense);
   }
-  function deleteExpense(id) {
+  async function deleteExpense(id) {
     setExpenses((prevValues) =>
       prevValues.filter((expense) => expense.id !== id)
     );
+    await deleteExpenses(id);
   }
   return (
     <ExpenseStoreProvider.Provider

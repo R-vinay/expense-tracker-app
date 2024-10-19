@@ -1,9 +1,11 @@
 import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useEffect } from "react";
 import { formatNumber } from "react-native-currency-input";
+import { fetchExpenses } from "../../util/http";
 const ExpensesList = ({ expenses }) => {
   const navigation = useNavigation();
+  useEffect(() => {}, []);
   function renderExpense(expenseData) {
     function handleExpensePress(expense) {
       navigation.navigate("ManageExpenses", {

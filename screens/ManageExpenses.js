@@ -6,6 +6,7 @@ import CurrencyInput from "react-native-currency-input";
 import { ExpenseStoreProvider } from "../store/ExpenseStore";
 import dayjs from "dayjs";
 import Button from "../components/Button";
+import { storeExpense } from "../util/http";
 const ManageExpenses = () => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -43,7 +44,7 @@ const ManageExpenses = () => {
       console.log(editData);
     }
   }
-  function updateNewExpense() {
+  async function updateNewExpense() {
     if (editData.amount === "" || editData.amount <= 0) {
       console.log(editData);
       Alert.alert("Invalid Amount", "Amount cannot be zero or less than it", [
@@ -56,7 +57,7 @@ const ManageExpenses = () => {
         [{ text: "Okay", style: "destructive" }]
       );
     } else {
-      updateExpense(editData);
+      await updateExpense(editData);
       navigation.navigate("allexpenses");
     }
   }
@@ -68,8 +69,8 @@ const ManageExpenses = () => {
         {
           text: "Yes",
           style: "destructive",
-          onPress: () => {
-            deleteExpense(editData.id);
+          onPress: async () => {
+            await deleteExpense(editData.id);
             navigation.navigate("allexpenses");
           },
         },
